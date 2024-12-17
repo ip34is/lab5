@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web Layout</title>
+    <style>
+        body {
+            margin: 0;
+            display: grid;
+            grid-template-rows: 15vh 60vh 10vh 15vh;
+            grid-template-columns: 1fr 3fr 1fr;
+            height: 100vh;
+        }
+
+        .block {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        .block1 {
+            background-color: #cce4ff;
+            grid-column: 1 / -1;
+        }
+
+        .block2 {
+            background-color: #ffe4cc;
+        }
+
+        .block3 {
+            background-color: #ffffff;
+        }
+
+        .block4 {
+            background-color: #ffe4cc;
+        }
+
+        .block5 {
+            background-color: #e4ffcc;
+            grid-column: 1 / -1;
+        }
+
+        .block6 {
+            background-color: #cce4ff;
+            grid-column: 1 / -1;
+        }
+
+        .box {
+            width: 50px;
+            height: 30px;
+            background-color: white;
+            border: 1px solid black;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .box.x {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+        }
+
+        .box.y {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+        }
+    </style>
+    <script>
+        function swapTexts() {
+            const block1 = document.querySelector('.block1');
+            const block6 = document.querySelector('.block6');
+            const temp = block1.innerHTML.trim();
+            block1.innerHTML = block6.innerHTML.trim();
+            block6.innerHTML = temp;
+        }
+
+        function calculateRhombusArea() {
+            const d1 = parseFloat(prompt("Enter the length of the first diagonal:"));
+            const d2 = parseFloat(prompt("Enter the length of the second diagonal:"));
+            if (!isNaN(d1) && !isNaN(d2) && d1 > 0 && d2 > 0) {
+                const area = (d1 * d2) / 2;
+                const block3 = document.querySelector('.block3');
+                block3.textContent += `\nRhombus Area: ${area}`;
+            } else {
+                alert("Invalid input. Please enter positive numeric values.");
+            }
+        }
+
+        function checkTriangle() {
+            const a = parseFloat(prompt("Enter side a:"));
+            const b = parseFloat(prompt("Enter side b:"));
+            const c = parseFloat(prompt("Enter side c:"));
+            if (!isNaN(a) && !isNaN(b) && !isNaN(c) && a > 0 && b > 0 && c > 0) {
+                const canForm = a + b > c && a + c > b && b + c > a;
+                document.cookie = `triangleCheck=${canForm}; path=/`;
+                alert(`Triangle can${canForm ? "" : " not"} be formed.`);
+            } else {
+                alert("Invalid input. Please enter positive numeric values.");
+            }
+        }
+
+        window.onload = function () {
+            const cookies = document.cookie.split('; ').find(row => row.startsWith('triangleCheck='));
+            if (cookies) {
+                const value = cookies.split('=')[1];
+                const confirmDelete = confirm(`Triangle check result from cookies: ${value}.
+Do you want to delete this data?`);
+                if (confirmDelete) {
+                    document.cookie = "triangleCheck=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/";
+                    location.reload();
+                } else {
+                    alert("Cookies preserved. Reload the page to see the form again.");
+                }
+            }
+        };
+
+        function toggleItalic() {
+            const block2 = document.querySelector('.block2');
+            const isItalic = document.querySelector('#italicToggle').checked;
+            block2.style.fontStyle = isItalic ? 'italic' : 'normal';
+            localStorage.setItem('isItalic', isItalic);
+        }
+
+        window.addEventListener('load', () => {
+            const isItalic = localStorage.getItem('isItalic') === 'true';
+            document.querySelector('.block2').style.fontStyle = isItalic ? 'italic' : 'normal';
+        });
+
+        function addListItem(blockNumber) {
+            const block = document.querySelector(`.block${blockNumber}`);
+            const newItem = prompt("Enter list item text:");
+            if (newItem) {
+                const list = block.querySelector('ol') || document.createElement('ol');
+                if (!block.contains(list)) block.appendChild(list);
+                const listItem = document.createElement('li');
+                listItem.textContent = newItem;
+                listItem.style.color = list.children.length % 2 === 0 ? 'white' : 'black';
+                listItem.style.backgroundColor = list.children.length % 2 === 0 ? 'black' : 'white';
+                list.appendChild(listItem);
+                localStorage.setItem(`block${blockNumber}List`, block.innerHTML);
+            }
+        }
+
+        window.addEventListener('load', () => {
+            for (let i = 1; i <= 6; i++) {
+                const block = document.querySelector(`.block${i}`);
+                const savedList = localStorage.getItem(`block${i}List`);
+                if (savedList) block.innerHTML = savedList;
+            }
+        });
+    </script>
+</head>
+<body>
+    <div class="block block1">Lorem 1</div>
+    <div class="block block2">Lorem 2
+      <button onclick="swapTexts()">Swap Texts (1 and 6)</button>
+      <button onclick="calculateRhombusArea()">Calculate Rhombus Area</button>
+      <button onclick="checkTriangle()">Check Triangle</button>
+      <button onclick="addListItem(3)">Add List Item to Block 3</button>
+      <form>
+          <label>
+              <input type="checkbox" id="italicToggle" onchange="toggleItalic()"> Enable Italic
+          </label>
+      </form>
+    </div>
+    <div class="block block3"><span>Rhombus area:</span>Lorem 3</div>
+    <div class="block block4">Lorem 4</div>
+    <div class="block block5">Lorem 5</div>
+    <div class="block block6">Lorem 6</div>
+
+    <div class="box x">x</div>
+    <div class="box y">y</div>
+
+
+</body>
+</html>
